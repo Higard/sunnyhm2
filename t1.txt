@@ -1,0 +1,16 @@
+#!/bin/bash
+aws autoscaling create-auto-scaling-group --auto-scaling-group-name my-asg --launch-template "LaunchTemplateName=tmp,Version=1" --min-size 1 --max-size 3 --desired-capacity 1 --vpc-zone-identifier subnet-0d463bf455e470320
+ssh -i C:/Users/PC/Downloads/key.pem ec2-user@ec2-72-44-40-81.compute-1.amazonaws.com
+aws ec2 describe-vpcs
+aws elbv2 create-target-group --name my-target-group --protocol HTTP --port 80 --vpc-id vpc-02fa44fd3ead487f2
+aws elbv2 register-targets --target-group-arn arn:aws:elasticloadbalancing:us-east-1:851725611469:targetgroup/my-target-group/a6c0fe94b210af64 --targets Id=i-03dc5e532e956977c
+aws ec2 describe-subnets
+aws elbv2 create-load-balancer --name my-load-balancer --subnets subnet-0d463bf455e470320 subnet-0e739a728151eb5b0 --security-groups sg-0e16dcc1e8f140ef3 --type application
+aws elbv2 create-listener --load-balancer-arn  --protocol HTTP --port 80 --default-actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:851725611469:targetgroup/my-target-group/a6c0fe94b210af64
+aws elbv2 create-listener --load-balancer-arn arn:aws:elasticloadbalancing:us-east-1:851725611469:loadbalancer/app/my-load-balancer/ec9681c1c87cea4c --protocol HTTP --port 80 --default-actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:851725611469:targetgroup/my-target-group/a6c0fe94b210af64
+aws autoscaling attach-load-balancer-target-groups --auto-scaling-group-name my-asg --target-group-arns arn:aws:elasticloadbalancing:us-east-1:851725611469:targetgroup/my-target-group/a6c0fe94b210af64
+aws elbv2 describe-target-health --target-group-arn arn:aws:elasticloadbalancing:us-east-1:851725611469:targetgroup/my-target-group/a6c0fe94b210af64
+aws s3api create-bucket --bucket sunnybucketan --region us-east-1
+aws s3api put-bucket-versioning --bucket sunnybucketan --versioning-configuration Status=Enabled
+aws s3 C:/Users/PC/Desktop/jm.txt s3://sunnybucketan/
+aws s3 cp C:/Users/PC/Desktop/jm.txt s3://sunnybucketan/
